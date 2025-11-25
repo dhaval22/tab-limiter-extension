@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tab Limiter</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #111827;
+      background: #f9fafb;
+    }
+    body {
+      margin: 0;
+      padding: 10px 12px 12px;
+      min-width: 220px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .subtitle {
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+    }
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    .bar {
+      margin-top: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+    .bar-inner {
+      height: 100%;
+      width: 0%;
+      background: #2563eb;
+      transition: width 0.15s ease-out;
+    }
+    .foot {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #6b7280;
+    }
+    button {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <span class="title">Tab Limiter</span>
+  </div>
+  <div class="subtitle">
+    Keep your tab garden trimmed.
+  </div>
+
+  <div class="card">
+    <div class="metric-row">
+      <span>Open tabs</span>
+      <span id="openTabs">-</span>
+    </div>
+    <div class="metric-row">
+      <span>Limit</span>
+      <span id="limit">-</span>
+    </div>
+
+    <div class="bar">
+      <div id="barInner" class="bar-inner"></div>
+    </div>
+
+    <div class="foot">
+      <span id="hint">Loading...</span>
+      <button id="openOptions">Options</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

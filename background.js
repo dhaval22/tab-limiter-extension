@@ -1,4 +1,6 @@
 const DEFAULT_MAX_TABS = 10;
+let lastNotificationTime = 0;
+const NOTIFICATION_COOLDOWN_MS = 4000; // 4 seconds
 
 // Get current maxTabs setting
 function getMaxTabs(callback) {
@@ -10,15 +12,34 @@ function getMaxTabs(callback) {
   );
 }
 
+// Show notification when a tab is blocked
+function showBlockedNotification(maxTabs) {
+  const now = Date.now();
+  if (now - lastNotificationTime < NOTIFICATION_COOLDOWN_MS) {
+    return; // avoid spamming notifications
+  }
+  lastNotificationTime = now;
+
+  chrome.notifications.create({
+    type: "basic",
+    iconUrl: "icon128.png",
+    title: "Tab limit reached",
+    message: `You are limited to ${maxTabs} tab${maxTabs === 1 ? "" : "s"}. The new tab was closed.`
+  });
+}
+
 // Enforce tab limit whenever a new tab is created
 chrome.tabs.onCreated.addListener((tab) => {
   getMaxTabs((maxTabs) => {
     chrome.tabs.query({}, (tabs) => {
       if (tabs.length > maxTabs) {
+        // Notify before closing
+        showBlockedNotification(maxTabs);
+
         // Try to close the newly created tab
         chrome.tabs.remove(tab.id, () => {
           if (chrome.runtime.lastError) {
-            // Some tabs (like chrome://) cannot be closed programmatically.
+            // Some tabs like chrome:// cannot be closed.
             // In that case, try closing the oldest normal tab.
             closeOldestUserTab(maxTabs);
           }
@@ -33,7 +54,6 @@ function closeOldestUserTab(maxTabs) {
   chrome.tabs.query({}, (tabs) => {
     if (tabs.length <= maxTabs) return;
 
-    // Filter out special tabs if you want to be safer
     const normalTabs = tabs.filter(
       (t) =>
         t.url &&
@@ -44,7 +64,6 @@ function closeOldestUserTab(maxTabs) {
 
     if (normalTabs.length === 0) return;
 
-    // Find the oldest tab by ID, or you could sort by 'index'
     const oldestTab = normalTabs.reduce((oldest, current) => {
       return current.id < oldest.id ? current : oldest;
     });
